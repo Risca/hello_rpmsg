@@ -13,15 +13,14 @@
 #include <ti/ipc/rpmsg/NameMap.h>
 #include <ti/ipc/rpmsg/RPMessage.h>
 
-static UInt16 dstProc = 0;
-static RPMessage_Handle handle = NULL;
 static UInt32 myEndpoint = 0;
-static UInt32 counter = 0;
 
 /* Send me a zero length data payload to tear down the MesssageQCopy object: */
 static Void pingCallbackFxn(RPMessage_Handle h, UArg arg, Ptr data,
     UInt16 len, UInt32 src)
 {
+    static UInt32 counter = 0;
+    static const UInt16 dstProc = 0;
     const Char *reply = "Pong!";
     UInt  replyLen = sizeof("Pong!");
 
@@ -37,6 +36,8 @@ static Void pingCallbackFxn(RPMessage_Handle h, UArg arg, Ptr data,
  */
 Void pingTaskFxn(UArg arg0, UArg arg1)
 {
+    RPMessage_Handle handle;
+
     System_printf("ping_task at port %d: Entered...\n", arg0);
 
     /* Create the messageQ for receiving, and register callback: */
