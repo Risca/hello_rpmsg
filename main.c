@@ -15,6 +15,12 @@
 
 static UInt32 myEndpoint = 0;
 
+#define GPIO5_DATAOUT       *(UInt32*)(0xA805B13C)
+#define GPIO5_CLEARDATAOUT  *(UInt32*)(0xA805B190)
+#define GPIO5_SETDATAOUT    *(UInt32*)(0xA805B194)
+
+#define LED_PIN (25)
+
 /* Send me a zero length data payload to tear down the MesssageQCopy object: */
 static Void pingCallbackFxn(RPMessage_Handle h, UArg arg, Ptr data,
     UInt16 len, UInt32 src)
@@ -26,6 +32,13 @@ static Void pingCallbackFxn(RPMessage_Handle h, UArg arg, Ptr data,
 
     System_printf("%d: Received msg: %s from %d, len:%d\n",
                   counter++, data, src, len);
+
+    if (counter % 2) {
+        GPIO5_CLEARDATAOUT = (1 << LED_PIN);
+    }
+    else {
+        GPIO5_SETDATAOUT = (1 << LED_PIN);
+    }
 
     /* Send data back to remote endpoint: */
     RPMessage_send(dstProc, arg, myEndpoint, (Ptr)reply, replyLen);
